@@ -80,8 +80,9 @@ module.exports = function(ctx) {
       return controlContainer;
     },
     addLayers: function() {
+      let suffix = ctx.options.sourceIdSuffix ? `-${ctx.options.sourceIdSuffix}`: '';
       // drawn features style
-      ctx.map.addSource(Constants.sources.COLD, {
+      ctx.map.addSource(Constants.sources.COLD + suffix, {
         data: {
           type: Constants.geojsonTypes.FEATURE_COLLECTION,
           features: []
@@ -90,7 +91,7 @@ module.exports = function(ctx) {
       });
 
       // hot features style
-      ctx.map.addSource(Constants.sources.HOT, {
+      ctx.map.addSource(Constants.sources.HOT + suffix, {
         data: {
           type: Constants.geojsonTypes.FEATURE_COLLECTION,
           features: []

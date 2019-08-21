@@ -32,13 +32,17 @@ const hideControls = {
   combine_features: false,
   uncombine_features: false
 };
-
-function addSources(styles, sourceBucket) {
+function addLayerSuffix (style, suffix) {
+  style.id += suffix; 
+}
+function addSources(styles, sourceIdSuffix, sourceBucket) {
+  let suffix = sourceIdSuffix ? `-${sourceIdSuffix}`: '';
   return styles.map(style => {
+    addLayerSuffix(style, suffix);
     if (style.source) return style;
     return xtend(style, {
       id: `${style.id}.${sourceBucket}`,
-      source: (sourceBucket === 'hot') ? Constants.sources.HOT : Constants.sources.COLD
+      source: (sourceBucket === 'hot') ? Constants.sources.HOT + suffix : Constants.sources.COLD + suffix
     });
   });
 }
@@ -59,7 +63,7 @@ module.exports = function(options = {}) {
   withDefaults = xtend(defaultOptions, withDefaults);
 
   // Layers with a shared source should be adjacent for performance reasons
-  withDefaults.styles = addSources(withDefaults.styles, 'cold').concat(addSources(withDefaults.styles, 'hot'));
+  withDefaults.styles = addSources(withDefaults.styles, withDefaults.sourceIdSuffix, 'cold').concat(addSources(withDefaults.styles, withDefaults.sourceIdSuffix, 'hot'));
 
   return withDefaults;
 };
