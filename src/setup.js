@@ -8,6 +8,10 @@ module.exports = function(ctx) {
 
   let controlContainer = null;
   let mapLoadedInterval = null;
+  let suffix = ctx.options.sourceIdSuffix ? `-${ctx.options.sourceIdSuffix}`: '';
+  let sourcesCold = Constants.sources.COLD + suffix;
+  let sourcesHot = Constants.sources.HOT + suffix;
+  
 
   const setup = {
     onRemove: function() {
@@ -82,7 +86,7 @@ module.exports = function(ctx) {
     addLayers: function() {
       let suffix = ctx.options.sourceIdSuffix ? `-${ctx.options.sourceIdSuffix}`: '';
       // drawn features style
-      ctx.map.addSource(Constants.sources.COLD + suffix, {
+      ctx.map.addSource(sourcesCold, {
         data: {
           type: Constants.geojsonTypes.FEATURE_COLLECTION,
           features: []
@@ -91,7 +95,7 @@ module.exports = function(ctx) {
       });
 
       // hot features style
-      ctx.map.addSource(Constants.sources.HOT + suffix, {
+      ctx.map.addSource(sourcesHot, {
         data: {
           type: Constants.geojsonTypes.FEATURE_COLLECTION,
           features: []
@@ -115,12 +119,12 @@ module.exports = function(ctx) {
         }
       });
 
-      if (ctx.map.getSource(Constants.sources.COLD)) {
-        ctx.map.removeSource(Constants.sources.COLD);
+      if (ctx.map.getSource(sourcesCold)) {
+        ctx.map.removeSource(sourcesCold);
       }
 
-      if (ctx.map.getSource(Constants.sources.HOT)) {
-        ctx.map.removeSource(Constants.sources.HOT);
+      if (ctx.map.getSource(sourcesHot)) {
+        ctx.map.removeSource(sourcesHot);
       }
     }
   };

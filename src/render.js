@@ -2,7 +2,10 @@ const Constants = require('./constants');
 
 module.exports = function render() {
   const store = this;
-  const mapExists = store.ctx.map && store.ctx.map.getSource(Constants.sources.HOT) !== undefined;
+  let suffix = store.ctx.options.sourceIdSuffix ? `-${store.ctx.options.sourceIdSuffix}`: '';
+  let sourcesCold = Constants.sources.COLD + suffix;
+  let sourcesHot = Constants.sources.HOT + suffix;
+  const mapExists = store.ctx.map && store.ctx.map.getSource(sourcesHot) !== undefined;
   if (!mapExists) return cleanup();
 
   const mode = store.ctx.events.currentModeName();
@@ -41,13 +44,13 @@ module.exports = function render() {
   }
 
   if (coldChanged) {
-    store.ctx.map.getSource(Constants.sources.COLD).setData({
+    store.ctx.map.getSource(sourcesCold).setData({
       type: Constants.geojsonTypes.FEATURE_COLLECTION,
       features: store.sources.cold
     });
   }
 
-  store.ctx.map.getSource(Constants.sources.HOT).setData({
+  store.ctx.map.getSource(sourcesHot).setData({
     type: Constants.geojsonTypes.FEATURE_COLLECTION,
     features: store.sources.hot
   });
