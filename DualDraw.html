@@ -39,6 +39,7 @@ font-size: 13px;
 <div class='calculation-box'>
 <p>Draw a polygon using the draw tools.</p>
 <div id='calculated-area'></div>
+<div id='calculated-area'></div>
 </div>
  
 <script>
@@ -51,28 +52,23 @@ center: [-91.874, 42.760], // starting position
 zoom: 12 // starting zoom
 });
  
-var draw = new MapboxDraw({
-displayControlsDefault: false,
-controls: {
-    point: true,
-polygon: true,
-trash: true
-}
-});
-map.addControl(draw);
 
-var draw2 = new MapboxDraw({
-    displayControlsDefault: false,
-    sourceIdSuffix: 222,
-    controls: {
-        point: true,
-        polygon: true,
-        trash: true
-    }
-});
-map.addControl(draw2);
 
-var draw3 = new MapboxDraw({
+const baseEvents = [
+    'draw.create',
+    'draw.delete',
+    'draw.update',
+    'draw.selectionchange',
+    'draw.modechange',
+    'draw.actionable',
+    // 'draw.render',
+    'draw.combine',
+    'draw.uncombine'
+];
+let finalEvents = [];
+const suffixes = ['', 222, 333];
+
+const baseOptions = {
     displayControlsDefault: false,
     sourceIdSuffix: 333,
     controls: {
@@ -80,25 +76,63 @@ var draw3 = new MapboxDraw({
         polygon: true,
         trash: true
     }
-});
-map.addControl(draw3);
- 
+}
+// Array for draw instances.
+let draws = [];
+
+suffixes.forEach(suffix => {
+    
+
+    let option = {};
+    Object.assign(option, baseOptions, {sourceIdSuffix: suffix});
+
+    // Generate draw instance and add to array and map.
+    let draw = new MapboxDraw(option);
+    map.addControl(draw);
+    draws.push(draw);
+
+    // Add suffix for draw events.
+    let events = [];
+    if (suffix) {
+        baseEvents.forEach((baseEvent, idx) => {
+            events.push(baseEvent + '.' + suffix);
+        })
+    } else {
+        events = baseEvents;
+    }
+    finalEvents.push(events)
+
+    // Add listener for suffixed event names.
+    events.forEach((event, idx) => {
+        map.on(event, e => {
+            if (idx <= 2) {
+                console.log(`Features in draw with suffix: ${suffix}`);
+                console.log(draw.getAll());
+            }
+            console.log(`${event} triggered for draw with suffix: ${suffix}`)
+        })
+    })
+
+    // Check feature collections for each draw in the beginning
+    console.log(`Features in draw with suffix: ${suffix}`);
+    console.log(draw.getAll());
+})
 // map.on('draw.create', updateArea);
 // map.on('draw.delete', updateArea);
 // map.on('draw.update', updateArea);
  
 // function updateArea(e) {
-// var data = draw.getAll();
-// var answer = document.getElementById('calculated-area');
-// if (data.features.length > 0) {
-// var area = turf.area(data);
-// // restrict to area to 2 decimal points
-// var rounded_area = Math.round(area*100)/100;
-// answer.innerHTML = '<p><strong>' + rounded_area + '</strong></p><p>square meters</p>';
-// } else {
-// answer.innerHTML = '';
-// if (e.type !== 'draw.delete') alert("Use the draw tools to draw a polygon!");
-// }
+//     var data = draw.getAll();
+//     var answer = document.getElementById('calculated-area');
+//     if (data.features.length > 0) {
+//         var area = turf.area(data);
+//         // restrict to area to 2 decimal points
+//         var rounded_area = Math.round(area*100)/100;
+//         answer.innerHTML = '<p><strong>' + rounded_area + '</strong></p><p>square meters</p>';
+//     } else {
+//         answer.innerHTML = '';
+//         if (e.type !== 'draw.delete') alert("Use the draw tools to draw a polygon!");
+//     }
 // }
  
 </script>

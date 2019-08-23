@@ -1,10 +1,13 @@
 const Constants = require('./constants');
+const addEventSuffix = require('./modes/addEventSuffix');
 
 module.exports = function render() {
   const store = this;
   let suffix = store.ctx.options.sourceIdSuffix ? `-${store.ctx.options.sourceIdSuffix}`: '';
   let sourcesCold = Constants.sources.COLD + suffix;
   let sourcesHot = Constants.sources.HOT + suffix;
+  let events = addEventSuffix(store.ctx.options.sourceIdSuffix);
+  
   const mapExists = store.ctx.map && store.ctx.map.getSource(sourcesHot) !== undefined;
   if (!mapExists) return cleanup();
 
@@ -56,7 +59,7 @@ module.exports = function render() {
   });
 
   if (store._emitSelectionChange) {
-    store.ctx.map.fire(Constants.events.SELECTION_CHANGE, {
+    store.ctx.map.fire(events.SELECTION_CHANGE, {
       features: store.getSelected().map(feature => feature.toGeoJSON()),
       points: store.getSelectedCoordinates().map(coordinate => {
         return {
@@ -77,13 +80,14 @@ module.exports = function render() {
 
     store._deletedFeaturesToEmit = [];
 
-    store.ctx.map.fire(Constants.events.DELETE, {
+    store.ctx.map.fire(events.DELETE, {
       features: geojsonToEmit
     });
+    console.log(events.DELETE + 'delete triggered ')
   }
 
   cleanup();
-  store.ctx.map.fire(Constants.events.RENDER, {});
+  store.ctx.map.fire(events.RENDER, {});
 
   function cleanup() {
     store.isDirty = false;

@@ -5,9 +5,10 @@ const isClick = require('./lib/is_click');
 const isTap = require('./lib/is_tap');
 const Constants = require('./constants');
 const objectToMode = require('./modes/object_to_mode');
+const addEventSuffix = require('./modes/addEventSuffix');
 
 module.exports = function(ctx) {
-
+  const suffixedEvents = addEventSuffix(ctx.options.sourceIdSuffix);
   const modes = Object.keys(ctx.options.modes).reduce((m, k) => {
     m[k] = objectToMode(ctx.options.modes[k]);
     return m;
@@ -177,7 +178,7 @@ module.exports = function(ctx) {
     currentMode = setupModeHandler(mode, ctx);
 
     if (!eventOptions.silent) {
-      ctx.map.fire(Constants.events.MODE_CHANGE, { mode: modename});
+      ctx.map.fire(suffixedEvents.MODE_CHANGE, { mode: modename});
     }
 
     ctx.store.setDirty();
@@ -197,7 +198,7 @@ module.exports = function(ctx) {
       if (actionState[action] !== actions[action]) changed = true;
       actionState[action] = actions[action];
     });
-    if (changed) ctx.map.fire(Constants.events.ACTIONABLE, { actions: actionState });
+    if (changed) ctx.map.fire(suffixedEvents.ACTIONABLE, { actions: actionState });
   }
 
   const api = {
