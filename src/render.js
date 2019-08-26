@@ -1,8 +1,14 @@
 const Constants = require('./constants');
+const addEventSuffix = require('./modes/addEventSuffix');
 
 module.exports = function render() {
   const store = this;
-  const mapExists = store.ctx.map && store.ctx.map.getSource(Constants.sources.HOT) !== undefined;
+  let suffix = store.ctx.options.sourceIdSuffix ? `-${store.ctx.options.sourceIdSuffix}`: '';
+  let sourcesCold = Constants.sources.COLD + suffix;
+  let sourcesHot = Constants.sources.HOT + suffix;
+  let events = addEventSuffix(store.ctx.options.sourceIdSuffix);
+  
+  const mapExists = store.ctx.map && store.ctx.map.getSource(sourcesHot) !== undefined;
   if (!mapExists) return cleanup();
 
   const mode = store.ctx.events.currentModeName();
@@ -41,19 +47,19 @@ module.exports = function render() {
   }
 
   if (coldChanged) {
-    store.ctx.map.getSource(Constants.sources.COLD).setData({
+    store.ctx.map.getSource(sourcesCold).setData({
       type: Constants.geojsonTypes.FEATURE_COLLECTION,
       features: store.sources.cold
     });
   }
 
-  store.ctx.map.getSource(Constants.sources.HOT).setData({
+  store.ctx.map.getSource(sourcesHot).setData({
     type: Constants.geojsonTypes.FEATURE_COLLECTION,
     features: store.sources.hot
   });
 
   if (store._emitSelectionChange) {
-    store.ctx.map.fire(Constants.events.SELECTION_CHANGE, {
+    store.ctx.map.fire(events.SELECTION_CHANGE, {
       features: store.getSelected().map(feature => feature.toGeoJSON()),
       points: store.getSelectedCoordinates().map(coordinate => {
         return {
@@ -74,13 +80,14 @@ module.exports = function render() {
 
     store._deletedFeaturesToEmit = [];
 
-    store.ctx.map.fire(Constants.events.DELETE, {
+    store.ctx.map.fire(events.DELETE, {
       features: geojsonToEmit
     });
+    console.log(events.DELETE + 'delete triggered ')
   }
 
   cleanup();
-  store.ctx.map.fire(Constants.events.RENDER, {});
+  store.ctx.map.fire(events.RENDER, {});
 
   function cleanup() {
     store.isDirty = false;

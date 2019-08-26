@@ -1,4 +1,4 @@
-module.exports = [
+const defaultLayers = [
   {
     'id': 'gl-draw-polygon-fill-inactive',
     'type': 'fill',
@@ -225,3 +225,12 @@ module.exports = [
     }
   }
 ];
+
+module.exports = function (suffix) {
+  if (suffix) {
+    defaultLayers.forEach(layer => {
+      layer.id += suffix;
+    });
+  }
+  return defaultLayers;
+}
