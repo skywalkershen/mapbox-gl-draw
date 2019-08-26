@@ -1,7 +1,7 @@
 # About this version
 Add a key `sourceIdSuffix` in option for generating multiple draw instance.
 
-Example: 
+Example:
 ```js
 let draw = new MapboxDraw();
 let draw2 = new MapboxDraw({
@@ -11,3 +11,5 @@ map.addControl(draw);
 map.addControl(draw2);
 ```
 The suffix will be added to events, sources and layers' ids, so no more id conflict.
+
+[Demo](https://skywalkershen.github.io/mapbox-gl-draw/)
