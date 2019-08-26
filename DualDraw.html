@@ -52,7 +52,7 @@ center: [-91.874, 42.760], // starting position
 zoom: 12 // starting zoom
 });
  
-
+console.log('Use method "getAll" to check features in the example draw instances.')
 
 const baseEvents = [
     'draw.create',
@@ -70,7 +70,6 @@ const suffixes = ['', 222, 333];
 
 const baseOptions = {
     displayControlsDefault: false,
-    sourceIdSuffix: 333,
     controls: {
         point: true,
         polygon: true,
@@ -79,6 +78,7 @@ const baseOptions = {
 }
 // Array for draw instances.
 let draws = [];
+
 
 suffixes.forEach(suffix => {
     
@@ -117,6 +117,12 @@ suffixes.forEach(suffix => {
     console.log(`Features in draw with suffix: ${suffix}`);
     console.log(draw.getAll());
 })
+
+function getAll () {
+    draws.forEach(
+        draw => console.log(draw.getAll())
+    )
+}
 // map.on('draw.create', updateArea);
 // map.on('draw.delete', updateArea);
 // map.on('draw.update', updateArea);
